@@ -1,0 +1,136 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+}
+
+:root {
+  --radius: 1rem;
+  --font-display: "Hind Siliguri", "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-sans: "Hind Siliguri", "Inter", system-ui, sans-serif;
+
+  /* Warm trustworthy palette: deep teal-green + saffron accent */
+  --background: oklch(0.985 0.012 85);
+  --foreground: oklch(0.22 0.03 175);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.03 175);
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.03 175);
+
+  --primary: oklch(0.45 0.11 175);
+  --primary-foreground: oklch(0.99 0.01 85);
+
+  --secondary: oklch(0.95 0.04 85);
+  --secondary-foreground: oklch(0.3 0.08 50);
+
+  --muted: oklch(0.96 0.015 90);
+  --muted-foreground: oklch(0.5 0.03 175);
+
+  --accent: oklch(0.78 0.16 65);
+  --accent-foreground: oklch(0.22 0.05 50);
+
+  --destructive: oklch(0.6 0.22 25);
+  --destructive-foreground: oklch(0.99 0 0);
+
+  --success: oklch(0.62 0.14 155);
+  --success-foreground: oklch(0.99 0 0);
+
+  --warning: oklch(0.78 0.16 65);
+  --warning-foreground: oklch(0.25 0.05 50);
+
+  --info: oklch(0.6 0.13 240);
+  --info-foreground: oklch(0.99 0 0);
+
+  --border: oklch(0.9 0.02 90);
+  --input: oklch(0.92 0.015 90);
+  --ring: oklch(0.45 0.11 175);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html, body {
+    font-family: var(--font-sans);
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer utilities {
+  .bg-gradient-hero {
+    background-image: linear-gradient(135deg, #FF9933 0%, #FF7A1A 45%, #138808 100%);
+  }
+  .bg-gradient-tricolor {
+    background-image: linear-gradient(180deg, #FF9933 0%, #FF9933 33%, #ffffff 33%, #ffffff 66%, #138808 66%, #138808 100%);
+  }
+  .bg-gradient-warm {
+    background-image: linear-gradient(135deg, oklch(0.82 0.14 70) 0%, oklch(0.72 0.18 50) 100%);
+  }
+  .bg-gradient-info {
+    background-image: linear-gradient(135deg, oklch(0.6 0.13 240) 0%, oklch(0.5 0.15 260) 100%);
+  }
+  .bg-gradient-farmer   { background-image: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+  .bg-gradient-student  { background-image: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); }
+  .bg-gradient-women    { background-image: linear-gradient(135deg, #ec4899 0%, #db2777 100%); }
+  .bg-gradient-worker   { background-image: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+  .bg-gradient-senior   { background-image: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+  .bg-gradient-health   { background-image: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+  .bg-gradient-insurance{ background-image: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); }
+  .bg-gradient-housing  { background-image: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+  .bg-gradient-business { background-image: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); }
+  .bg-gradient-energy   { background-image: linear-gradient(135deg, #eab308 0%, #ca8a04 100%); }
+  .bg-gradient-food     { background-image: linear-gradient(135deg, #84cc16 0%, #65a30d 100%); }
+  .bg-gradient-land     { background-image: linear-gradient(135deg, #a16207 0%, #78350f 100%); }
+  .bg-gradient-all      { background-image: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%); }
+  .shadow-soft {
+    box-shadow: 0 4px 20px -6px oklch(0.45 0.11 175 / 0.18);
+  }
+  .shadow-lift {
+    box-shadow: 0 10px 30px -10px oklch(0.45 0.11 175 / 0.25);
+  }
+}

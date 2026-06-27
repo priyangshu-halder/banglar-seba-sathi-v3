@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "tracker can read own by phone" ON public.reports;

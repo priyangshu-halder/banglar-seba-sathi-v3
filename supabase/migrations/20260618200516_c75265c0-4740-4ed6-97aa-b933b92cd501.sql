@@ -1,0 +1,1 @@
+ALTER TABLE public.benefits ADD COLUMN IF NOT EXISTS video_url text;
