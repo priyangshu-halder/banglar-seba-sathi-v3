@@ -14,6 +14,10 @@ import {
   Sparkles,
   Languages,
   Flame,
+  Megaphone,
+  Heart,
+  Calendar,
+  // MessageIcon
 } from "lucide-react";
 import ashokaEmblem from "@/assets/ashoka-emblem.png";
 import wbHero from "@/assets/wb-hero.jpg";
@@ -167,7 +171,28 @@ function Home() {
         </header>
 
         <main className="px-5 -mt-16 relative space-y-5">
+          
+
+          {/* TWO main bold actions: Benefits + Services */}
+          <section className="grid grid-cols-2 gap-3">
+            <BigAction
+              to="/benefits"
+              icon={Gift}
+              title={t.benefits}
+              subtitle={t.benefitsSub}
+              gradient="bg-gradient-warm"
+            />
+            <BigAction
+              to="/services"
+              icon={Building2}
+              title={t.services}
+              subtitle={t.servicesSub}
+              gradient="bg-gradient-hero"
+            />
+          </section>
           {/* Your voice — moved up */}
+                    <h3>Your Voice, Your Area</h3>
+
           <section className="grid grid-cols-2 gap-3">
             <Link
               to="/report"
@@ -192,22 +217,16 @@ function Home() {
             </Link>
           </section>
 
-          {/* TWO main bold actions: Benefits + Services */}
-          <section className="grid grid-cols-2 gap-3">
-            <BigAction
-              to="/benefits"
-              icon={Gift}
-              title={t.benefits}
-              subtitle={t.benefitsSub}
-              gradient="bg-gradient-warm"
-            />
-            <BigAction
-              to="/services"
-              icon={Building2}
-              title={t.services}
-              subtitle={t.servicesSub}
-              gradient="bg-gradient-hero"
-            />
+          
+          {/* Quick Access  */}
+          <section className="mt-8">
+            <h2 className="text-base font-bold mb-3">Quick Access</h2>
+            <div className="grid grid-cols-4 gap-3">
+              <QuickTile to="/services" icon={Calendar} label="Book Slot" />
+              <QuickTile to="/services" icon={MapPin} label="Nearby" />
+              <QuickTile to="/report" icon={AlertTriangle} label="Report" />
+              <QuickTile to="/ask" icon={MessageIcon} label="Ask AI" />
+            </div>
           </section>
 
           {/* Emergency — compact tile row */}
@@ -221,13 +240,16 @@ function Home() {
               <Emerg icon={Flame} label={t.fire} num="101" tone="bg-warning/15 text-warning-foreground" />
             </div>
           </section>
+          
         </main>
       </div>
       <BottomNav />
     </div>
   );
 }
-
+function MessageIcon(props: React.SVGProps<SVGSVGElement>) {
+  return <Sparkles {...props} />;
+}
 function BigAction({
   to,
   icon: Icon,
@@ -282,5 +304,27 @@ function Emerg({
       <span className="text-[11px] font-bold leading-none">{label}</span>
       <span className="text-[10px] opacity-70 font-mono">{num}</span>
     </a>
+  );
+}
+
+function QuickTile({
+  to,
+  icon: Icon,
+  label,
+}: {
+  to: string;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+}) {
+  return (
+    <Link
+      to={to}
+      className="bg-card border border-border rounded-2xl p-3 flex flex-col items-center gap-2 hover:shadow-soft hover:border-primary/30 transition-all"
+    >
+      <div className="h-10 w-10 rounded-xl bg-secondary flex items-center justify-center">
+        <Icon className="h-5 w-5 text-secondary-foreground" />
+      </div>
+      <span className="text-[11px] font-semibold text-center leading-tight">{label}</span>
+    </Link>
   );
 }
