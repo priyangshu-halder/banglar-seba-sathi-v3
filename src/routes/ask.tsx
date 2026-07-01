@@ -5,7 +5,7 @@ import { Mic, Send, Sparkles, Loader2 } from "lucide-react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { supabase } from "@/lib/supabase";
 
-const apiKey = import.meta.env.VITE_GEMINI;
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
 const genAI = new GoogleGenerativeAI(apiKey || "");
 
