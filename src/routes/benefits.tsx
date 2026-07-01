@@ -67,10 +67,7 @@ function BenefitsPage() {
         s.name.toLowerCase().includes(q) ||
         s.bn.includes(query) ||
         s.category.toLowerCase().includes(q) ||
-        (Array.isArray(s.eligibility)
-  ? s.eligibility
-  : []
-).some((e) => e.toLowerCase().includes(q));
+        s.eligibility.some((e: string) => e.toLowerCase().includes(q));
 
       // Personalize
       let matchPersonal = true;
@@ -181,17 +178,24 @@ function BenefitsPage() {
 
                 {isOpen && (
                   <div className="px-4 pb-4 space-y-3 border-t border-border pt-4">
-                    {Array.isArray(s.eligibility) && s.eligibility.length > 0 && (
+                    {s.eligibility.length > 0 && (
                       <Section title="Eligibility" icon={CheckCircle2}>
                         <ul className="space-y-1">
-                          <li>this is eligibility</li>
+                          {s.eligibility.map((e: string) => (
+                            <li key={e} className="text-sm flex items-start gap-2">
+                              <span className="text-success mt-0.5">✓</span>
+                              <span>{e}</span>
+                            </li>
+                          ))}
                         </ul>
                       </Section>
                     )}
                     {s.docs.length > 0 && (
                       <Section title="Documents Required" icon={FileText}>
                         <div className="flex flex-wrap gap-2">
-                          
+                          {s.docs.map((d: string) => (
+                            <span key={d} className="text-xs font-semibold bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full">{d}</span>
+                          ))}
                         </div>
                       </Section>
                     )}

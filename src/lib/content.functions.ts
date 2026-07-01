@@ -13,12 +13,33 @@ export const listUpdates = createServerFn({ method: "GET" }).handler(async () =>
 
 export const listBenefits = createServerFn({ method: "GET" }).handler(async () => {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
   const { data, error } = await supabaseAdmin
     .from("benefits")
     .select("*")
     .order("created_at", { ascending: true });
+
   if (error) throw new Error(error.message);
-  return { benefits: data ?? [] };
+
+  const benefits = (data ?? []).map((b: any) => ({
+    ...b,
+
+    eligibility:
+      Array.isArray(b.eligibility)
+        ? b.eligibility
+        : typeof b.eligibility === "string"
+          ? JSON.parse(b.eligibility)
+          : [],
+
+    docs:
+      Array.isArray(b.docs)
+        ? b.docs
+        : typeof b.docs === "string"
+          ? JSON.parse(b.docs)
+          : [],
+  }));
+
+  return { benefits };
 });
 
 export const listServices = createServerFn({ method: "GET" }).handler(async () => {
