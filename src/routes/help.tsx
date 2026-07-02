@@ -82,24 +82,8 @@ function HelpPage() {
     const el = scrollerRef.current;
     if (!el) return;
     const onScroll = () => {
-      let ticking = false;
-
-const onScroll = () => {
-  if (ticking) return;
-
-  requestAnimationFrame(() => {
-    const index = Math.floor(
-      (el.scrollTop + el.clientHeight * 0.5) /
-      el.clientHeight
-    );
-
-    setActive(index);
-
-    ticking = false;
-  });
-
-  ticking = true;
-};
+      const i = Math.round(el.scrollTop / el.clientHeight);
+      setActive(i);
     };
     el.addEventListener("scroll", onScroll, { passive: true });
     return () => el.removeEventListener("scroll", onScroll);
@@ -132,14 +116,7 @@ const onScroll = () => {
       ) : (
         <div
           ref={scrollerRef}
-          className="
-overflow-y-auto
-snap-y
-snap-mandatory
-scroll-smooth
-overscroll-y-contain
-touch-pan-y
-"
+          className="overflow-y-scroll snap-y snap-proximity overscroll-contain scrollbar-none"
           style={{
             scrollbarWidth: "none",
             height: "100svh",
@@ -167,11 +144,8 @@ function ShortCard({ update, onOpen }: { update: Update; onOpen: () => void }) {
 
   return (
     <article
-      className="snap-start snap-always mx-auto max-w-md flex flex-col bg-neutral-950"
-      style={{
-        height:
-          "calc(100dvh - 3.5rem)"
-      }}
+      className="snap-start mx-auto max-w-md flex flex-col bg-neutral-950"
+      style={{ minHeight: "calc(100svh - 3.5rem - 5rem - env(safe-area-inset-bottom))" }}
     >
 
       <div className="relative w-full aspect-[4/3] bg-neutral-900 overflow-hidden shrink-0">
@@ -206,12 +180,7 @@ function ShortCard({ update, onOpen }: { update: Update; onOpen: () => void }) {
           </p>
         </div>
 
-        <div
-          className="mt-3 pt-3 border-t border-neutral-200 flex items-center justify-between gap-2 shrink-0 bg-white sticky bottom-0"
-          style={{
-            paddingBottom: "calc(env(safe-area-inset-bottom) + 12px)"
-          }}
-        >
+        <div className="mt-3 pt-3 border-t border-neutral-200 flex items-center justify-between gap-2 shrink-0">
 
           <div className="text-[11px] text-neutral-500 flex items-center gap-1.5 min-w-0">
             <Clock className="h-3.5 w-3.5 shrink-0" />
@@ -235,7 +204,7 @@ function DetailSheet({ update, onClose }: { update: Update; onClose: () => void 
   const share = async () => {
     const url = update.online_url || window.location.href;
     if (navigator.share) {
-      try { await navigator.share({ title: update.title, text: update.description, url }); } catch { }
+      try { await navigator.share({ title: update.title, text: update.description, url }); } catch {}
     } else {
       navigator.clipboard?.writeText(`${update.title} — ${url}`);
     }
