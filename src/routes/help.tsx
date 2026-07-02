@@ -82,15 +82,31 @@ function HelpPage() {
     const el = scrollerRef.current;
     if (!el) return;
     const onScroll = () => {
-      const i = Math.round(el.scrollTop / el.clientHeight);
-      setActive(i);
+      let ticking = false;
+
+const onScroll = () => {
+  if (ticking) return;
+
+  requestAnimationFrame(() => {
+    const index = Math.floor(
+      (el.scrollTop + el.clientHeight * 0.5) /
+      el.clientHeight
+    );
+
+    setActive(index);
+
+    ticking = false;
+  });
+
+  ticking = true;
+};
     };
     el.addEventListener("scroll", onScroll, { passive: true });
     return () => el.removeEventListener("scroll", onScroll);
   }, [rows.length]);
 
   return (
-    <div className="min-h-screen bg-black text-white pb-16">
+    <div className="min-h-screen bg-black text-white">
       <header className="fixed top-0 inset-x-0 z-40 bg-black/70 backdrop-blur-lg border-b border-white/10">
         <div className="mx-auto max-w-md px-4 h-14 flex items-center gap-3">
           <Link to="/" className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center">
@@ -108,6 +124,7 @@ function HelpPage() {
         </div>
       </header>
 
+
       {loading ? (
         <div className="h-screen flex items-center justify-center">
           <Loader2 className="h-6 w-6 animate-spin text-white/70" />
@@ -115,14 +132,27 @@ function HelpPage() {
       ) : (
         <div
           ref={scrollerRef}
-          className="h-screen overflow-y-scroll snap-y snap-mandatory pt-14 pb-16 scrollbar-none"
-          style={{ scrollbarWidth: "none" }}
+          className="
+overflow-y-auto
+snap-y
+snap-mandatory
+scroll-smooth
+overscroll-y-contain
+touch-pan-y
+"
+          style={{
+            scrollbarWidth: "none",
+            height: "100svh",
+            paddingTop: "3.5rem",
+            paddingBottom: "calc(5rem + env(safe-area-inset-bottom))",
+          }}
         >
           {rows.map((r) => (
             <ShortCard key={r.id} update={r} onOpen={() => setOpen(r)} />
           ))}
         </div>
       )}
+
 
       {open && <DetailSheet update={open} onClose={() => setOpen(null)} />}
       <BottomNav />
@@ -136,7 +166,14 @@ function ShortCard({ update, onOpen }: { update: Update; onOpen: () => void }) {
   const dateStr = fmtDate(update.deadline);
 
   return (
-    <article className="snap-start h-[calc(100vh-3.5rem-4rem)] mx-auto max-w-md flex flex-col bg-neutral-950">
+    <article
+      className="snap-start snap-always mx-auto max-w-md flex flex-col bg-neutral-950"
+      style={{
+        height:
+          "calc(100dvh - 3.5rem)"
+      }}
+    >
+
       <div className="relative w-full aspect-[4/3] bg-neutral-900 overflow-hidden shrink-0">
         {cover ? (
           <img src={cover} alt={update.title} className="w-full h-full object-cover" loading="lazy" />
@@ -160,14 +197,22 @@ function ShortCard({ update, onOpen }: { update: Update; onOpen: () => void }) {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 px-5 pt-4 pb-3 flex flex-col overflow-hidden bg-white text-neutral-900 rounded-t-3xl -mt-4 relative shadow-lift">
-        <h2 className="text-xl font-extrabold leading-snug tracking-tight">{update.title}</h2>
-        {update.bn && <p className="text-xs text-neutral-500 mt-1">{update.bn}</p>}
-        <p className="text-[13.5px] leading-relaxed text-neutral-700 mt-3 flex-1 overflow-hidden">
-          {update.description}
-        </p>
+      <div className="flex-1 min-h-0 px-5 pt-4 pb-3 flex flex-col bg-white text-neutral-900 rounded-t-3xl -mt-4 relative shadow-lift">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain pr-1" style={{ WebkitOverflowScrolling: "touch" }}>
+          <h2 className="text-xl font-extrabold leading-snug tracking-tight">{update.title}</h2>
+          {update.bn && <p className="text-xs text-neutral-500 mt-1">{update.bn}</p>}
+          <p className="text-[13.5px] leading-relaxed text-neutral-700 mt-3">
+            {update.description}
+          </p>
+        </div>
 
-        <div className="mt-3 pt-3 border-t border-neutral-200 flex items-center justify-between gap-2">
+        <div
+          className="mt-3 pt-3 border-t border-neutral-200 flex items-center justify-between gap-2 shrink-0 bg-white sticky bottom-0"
+          style={{
+            paddingBottom: "calc(env(safe-area-inset-bottom) + 12px)"
+          }}
+        >
+
           <div className="text-[11px] text-neutral-500 flex items-center gap-1.5 min-w-0">
             <Clock className="h-3.5 w-3.5 shrink-0" />
             <span className="truncate">
@@ -190,7 +235,7 @@ function DetailSheet({ update, onClose }: { update: Update; onClose: () => void 
   const share = async () => {
     const url = update.online_url || window.location.href;
     if (navigator.share) {
-      try { await navigator.share({ title: update.title, text: update.description, url }); } catch {}
+      try { await navigator.share({ title: update.title, text: update.description, url }); } catch { }
     } else {
       navigator.clipboard?.writeText(`${update.title} — ${url}`);
     }
