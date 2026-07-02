@@ -78,16 +78,55 @@ function HelpPage() {
     list().then((r) => { setRows(r.updates as any); setLoading(false); });
   }, []);
 
+  // useEffect(() => {
+  //   const el = scrollerRef.current;
+  //   if (!el) return;
+  //   const onScroll = () => {
+  //     let ticking = false;
+
+  //     const onScroll = () => {
+  //       if (ticking) return;
+
+  //       requestAnimationFrame(() => {
+  //         const index = Math.floor(
+  //           (el.scrollTop + el.clientHeight * 0.5) /
+  //           el.clientHeight
+  //         );
+
+  //         setActive(index);
+
+  //         ticking = false;
+  //       });
+
+  //       ticking = true;
+  //     };
+  //   };
+  //   el.addEventListener("scroll", onScroll, { passive: true });
+  //   return () => el.removeEventListener("scroll", onScroll);
+  // }, [rows.length]);
   useEffect(() => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    const onScroll = () => {
-      const i = Math.round(el.scrollTop / el.clientHeight);
-      setActive(i);
-    };
-    el.addEventListener("scroll", onScroll, { passive: true });
-    return () => el.removeEventListener("scroll", onScroll);
-  }, [rows.length]);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = Number(
+              entry.target.getAttribute("data-index")
+            );
+            setActive(index);
+          }
+        });
+      },
+      {
+        threshold: 0.5,
+      }
+    );
+
+    const cards = document.querySelectorAll(".update-card");
+
+    cards.forEach((card) => observer.observe(card));
+
+    return () => observer.disconnect();
+  }, [rows]);
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -116,16 +155,21 @@ function HelpPage() {
       ) : (
         <div
           ref={scrollerRef}
-          className="overflow-y-scroll snap-y snap-proximity overscroll-contain scrollbar-none"
+          className="overflow-y-auto overscroll-contain"
           style={{
             scrollbarWidth: "none",
-            height: "100svh",
+            height: "100dvh",
             paddingTop: "3.5rem",
             paddingBottom: "calc(5rem + env(safe-area-inset-bottom))",
           }}
         >
-          {rows.map((r) => (
-            <ShortCard key={r.id} update={r} onOpen={() => setOpen(r)} />
+          {rows.map((r, index) => (
+            <ShortCard
+              key={r.id}
+              index={index}
+              update={r}
+              onOpen={() => setOpen(r)}
+            />
           ))}
         </div>
       )}
@@ -137,15 +181,27 @@ function HelpPage() {
   );
 }
 
-function ShortCard({ update, onOpen }: { update: Update; onOpen: () => void }) {
+function ShortCard({
+  update,
+  onOpen,
+  index,
+}: {
+  update: Update;
+  onOpen: () => void;
+  index: number;
+}) {
   const vid = ytId(update.youtube_url);
   const cover = update.cover_image || (vid ? `https://img.youtube.com/vi/${vid}/hqdefault.jpg` : null);
   const dateStr = fmtDate(update.deadline);
 
   return (
     <article
-      className="snap-start mx-auto max-w-md flex flex-col bg-neutral-950"
-      style={{ minHeight: "calc(100svh - 3.5rem - 5rem - env(safe-area-inset-bottom))" }}
+      data-index={index}
+      className="update-card mx-auto max-w-md flex flex-col bg-neutral-950 mb-6"
+    // style={{
+    //   height:
+    //     "calc(100dvh - 3.5rem)"
+    // }}
     >
 
       <div className="relative w-full aspect-[4/3] bg-neutral-900 overflow-hidden shrink-0">
@@ -172,7 +228,7 @@ function ShortCard({ update, onOpen }: { update: Update; onOpen: () => void }) {
       </div>
 
       <div className="flex-1 min-h-0 px-5 pt-4 pb-3 flex flex-col bg-white text-neutral-900 rounded-t-3xl -mt-4 relative shadow-lift">
-        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain pr-1" style={{ WebkitOverflowScrolling: "touch" }}>
+        <div className="px-1">
           <h2 className="text-xl font-extrabold leading-snug tracking-tight">{update.title}</h2>
           {update.bn && <p className="text-xs text-neutral-500 mt-1">{update.bn}</p>}
           <p className="text-[13.5px] leading-relaxed text-neutral-700 mt-3">
@@ -180,7 +236,12 @@ function ShortCard({ update, onOpen }: { update: Update; onOpen: () => void }) {
           </p>
         </div>
 
-        <div className="mt-3 pt-3 border-t border-neutral-200 flex items-center justify-between gap-2 shrink-0">
+        <div
+          className="mt-3 pt-3 border-t border-neutral-200 flex items-center justify-between gap-2"
+        // style={{
+        //   paddingBottom: "calc(env(safe-area-inset-bottom) + 12px)"
+        // }}
+        >
 
           <div className="text-[11px] text-neutral-500 flex items-center gap-1.5 min-w-0">
             <Clock className="h-3.5 w-3.5 shrink-0" />
@@ -204,14 +265,14 @@ function DetailSheet({ update, onClose }: { update: Update; onClose: () => void 
   const share = async () => {
     const url = update.online_url || window.location.href;
     if (navigator.share) {
-      try { await navigator.share({ title: update.title, text: update.description, url }); } catch {}
+      try { await navigator.share({ title: update.title, text: update.description, url }); } catch { }
     } else {
       navigator.clipboard?.writeText(`${update.title} — ${url}`);
     }
   };
   return (
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end justify-center" onClick={onClose}>
-      <div className="bg-background text-foreground w-full max-w-md rounded-t-3xl max-h-[92vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-background text-foreground w-full max-w-md h-[100dvh] overflow-y-auto rounded-none md:rounded-t-3xl" onClick={(e) => e.stopPropagation()}>
         <div className={`${update.tone} text-primary-foreground p-5 rounded-t-3xl relative`}>
           <div className="mx-auto h-1.5 w-12 bg-white/40 rounded-full mb-4" />
           <button onClick={onClose} className="absolute top-4 right-4 h-9 w-9 rounded-full bg-white/20 flex items-center justify-center" aria-label="Close">
